@@ -1,5 +1,15 @@
-<div>
-<input type="text" ng-model="typedWord" ng-change="printWordsFrom(typedWord)"/>
+<div class="container">
+<h1 >RealTime (3 letter) Word Finder</h1>
+<h3 style="margin-top:10px;">The fastest possible way to cheat at Scrabble.</h3>
+<ul> 
+<li><h4>All 3 letter words that can be made with the letters you type will be displayed instantly.</h4></li>
+<li><h4>Currently finding only and all words up to 3 letters long!</h4></li>
+<li><h4>Letters can be typed in any  order, with or without punctuation or spaces. Just start typing.</h4></li>
+</ul>
 <br>
-<div style="width:300px"><p style="margin-left:10px;margin-right:10px">{{toPrint}}</p></div>
+<div class="wordContainer">
+<input type="text" ng-model="typedWord" ng-change="printWordsFrom(typedWord)" PlaceHolder="Type letters here to find some words"/>
+<br>
+<div ><p class="words">{{toPrint}}</p></div>
+</div>
 </div>

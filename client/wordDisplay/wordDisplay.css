@@ -1,0 +1,16 @@
+input[type="text"] {
+  display: block;
+  margin: 0;
+  width: 50%;
+  height: 50px;
+  font-family: sans-serif;
+  font-size: 30px;
+  appearance: none;
+  box-shadow: none;
+  border-radius: none;
+}
+
+.words{
+  font-family: sans-serif;
+  font-size: 30px;
+}
