@@ -4,21 +4,21 @@ angular.module('getWords', ['ngRoute'])
     console.log("test1");
     $routeProvider
       .when('/',{
+        templateUrl:'/client/wordDisplay/wordDisplay.html',
         controller:'GetWordsCtrl',
-        template:'<input type="text" ng-model="typedWord" ng-change="printWordsFrom(typedWord)"/><pre>{{ hasWord }},{{typedWord}},{{toPrint}}</pre>',
-        resolve:{
-          'GetWordsData':function(GetWords){
-            console.log("test4");
-            return GetWords.promise;
-          }
-        }
       })
   })
   .controller( 'GetWordsCtrl', ['$scope','GetWords', 'wordFind', function ( $scope, GetWords, wordFind ) {
-      console.log(GetWords.getWords());
-      $scope.words = GetWords.getWords();
+      
+      $scope.words = "";
       $scope.hasWord = "";
       $scope.toPrint = "";
+      GetWords.getWords().then(function(data) {
+        console.log("DATA ", data);
+        $scope.words = data;
+      }).catch(function(error) {
+        console.error(error);
+      })
       $scope.seeIfHasWord = function(tWord){
         $scope.hasWord = !!$scope.words[tWord];
       };
@@ -39,21 +39,19 @@ angular.module('getWords', ['ngRoute'])
         $scope.toPrint = toPrint;
       };
   }])
-  .service('GetWords',function($http){
-    var wordList = null;
-
-    var promise = $http.get('http://127.0.0.1:3000/').success(function (data) {
-      wordList = data;
-    });
+  .factory('GetWords', function($http) {
+    var getWords = function() {
+       console.log("test2");
+      return $http({
+        method: 'GET',
+        url: '/words'
+      }).then(function(res) {
+        console.log(res.data);
+        return res.data;
+      });
+    };
     return {
-      promise:promise,
-      setData: function (data) {
-          wordList = data;
-      },
-      getWords: function () {
-          console.log("test3");
-          return wordList;
-      }
+      getWords: getWords
     };
   })
   .factory('wordFind', function(){

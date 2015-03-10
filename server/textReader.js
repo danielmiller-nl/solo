@@ -1,6 +1,4 @@
 var fs = require('fs');
-var finalhandler = require('finalhandler');
-var serveStatic = require('serve-static');
 var _ = require('underscore');
 
 var defaultCorsHeaders = {
@@ -10,7 +8,7 @@ var defaultCorsHeaders = {
   "access-control-max-age": 10, // Seconds.
   //"Content-Type": "application/json"
 };
-var serve = serveStatic('../client/', {'index': ['index.html', 'index.htm']});
+
 var requestHandler = function(request, response) {
   console.log("Serving request type " + request.method + " for url " + request.url);
 
@@ -25,11 +23,10 @@ var requestHandler = function(request, response) {
       var textArray = data.split("\n");
       var threeLetterWordsObject = arrayValsToObjectKeys(getThreeLetterWords(textArray));
       var count = 0;
-      response.writeHead(200, headers);
-      var done = finalhandler(request, response);
-      console.log("response ",response.data);
-      serve(request, response, done);
-      response.end(JSON.stringify(threeLetterWordsObject));
+      response.words = {};
+      response.words = threeLetterWordsObject;
+      response.send(response.words);
+      response.end();
     });
 
   } else if (request.method === 'OPTIONS') {
