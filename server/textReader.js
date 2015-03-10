@@ -24,7 +24,13 @@ var requestHandler = function(request, response) {
       response.end(JSON.stringify(textArray));
     });
 
-  } else {
+  } else if (request.method === 'OPTIONS') {
+
+    response.writeHead(200, headers);
+    response.end(/*request.url*/);
+
+  } 
+  else {
 
     response.writeHead(404, headers);
     response.end();
