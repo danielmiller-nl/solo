@@ -1,4 +1,5 @@
 var http = require("http");
+var serveStatic = require('serve-static');
 var requestHandler = require('./textReader.js');
 
 var port = 3000;
