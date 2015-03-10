@@ -38,6 +38,8 @@ var requestHandler = function(request, response) {
   else {
 
     response.writeHead(404, headers);
+    response.errorTest = "This is a test!";
+    response.send(response.errorTest);
     response.end();
 
   }
