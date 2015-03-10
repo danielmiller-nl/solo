@@ -1,20 +1,18 @@
 angular.module('getWords', ['ngRoute'])
 
   .config(function($routeProvider){
-    console.log("test1");
     $routeProvider
       .when('/',{
         templateUrl:'/client/wordDisplay/wordDisplay.html',
         controller:'GetWordsCtrl',
       })
   })
-  .controller( 'GetWordsCtrl', ['$scope','GetWords', 'wordFind', function ( $scope, GetWords, wordFind ) {
+  .controller( 'GetWordsCtrl', ['$scope','GetWords', 'ThreeLetterPermutations', function ( $scope, GetWords, ThreeLetterPermutations ) {
       
       $scope.words = "";
       $scope.hasWord = "";
       $scope.toPrint = "";
       GetWords.getWords().then(function(data) {
-        console.log("DATA ", data);
         $scope.words = data;
       }).catch(function(error) {
         console.error(error);
@@ -23,30 +21,35 @@ angular.module('getWords', ['ngRoute'])
         $scope.hasWord = !!$scope.words[tWord];
       };
       $scope.printWordsFrom = function(letters){
-        var c = letters;
+
+        var possibleWords = ThreeLetterPermutations.TLPs(letters);
+
         var toPrint = [];
-        for(var i = 0;i<c.length;i++){
-          var letter = c[i];
-          var remaining = c.slice(0,i)+c.slice(i+1);
-          for(var j = 0;j<remaining.length;j++){
-            var newWord = remaining.slice(0,j)+letter+remaining.slice(j+1);
-            console.log(newWord);
-            if(!!$scope.words[newWord]){
-              toPrint.push(newWord);
-            }
+        for(var i = 0;i<possibleWords.length;i++){
+          if($scope.words[possibleWords[i]]){
+            toPrint.push(possibleWords[i]);
           }
         }
-        $scope.toPrint = toPrint;
+        toPrint = toPrint.sort();
+        var toPrintString = "";
+        var subString = "";
+        for(var j = 0;j<toPrint.length;j++){
+          subString += toPrint[j]+", ";
+          if(j%10==0){
+            toPrintString+=subString+"\n";
+            subString = "";
+          }
+        }
+        toPrintString+=subString;
+        $scope.toPrint = toPrintString;
       };
   }])
   .factory('GetWords', function($http) {
     var getWords = function() {
-       console.log("test2");
       return $http({
         method: 'GET',
         url: '/words'
       }).then(function(res) {
-        console.log(res.data);
         return res.data;
       });
     };
@@ -54,54 +57,71 @@ angular.module('getWords', ['ngRoute'])
       getWords: getWords
     };
   })
-  .factory('wordFind', function(){
+  .factory('ThreeLetterPermutations', function(){
+    
+    var allPermutations = function(string,currentPs) {
+
+      if(string.length <= 1){
+        return [string];
+      }
+
+      var insertLetterAt = function(str,letter,index){
+        return str.slice(0,index)+letter+str.slice(index);
+      };
+
+      var forEachInsertion = function(str,letter,callback){
+        for(var i = 0;i<=str.length;i++){
+          callback(insertLetterAt(str,letter,i));
+        }
+      };
+
+      var recursivePermutation = function(str){
+        var strL = str.length;
+        if(str.length == 1){
+          return [str];
+        } else {
+          var permutations = [];
+          var pOWFLR = recursivePermutation(str.slice(1)); // permutationsOfStringWithFirstLetterRemoved
+          var firstLetter = str[0];
+          pOWFLR.forEach(function(element,index,array){
+            forEachInsertion(element,firstLetter,function(newStr){
+              if(str === string){
+                currentPs[newStr] = true;
+              } else {
+                permutations.push(newStr);
+              }
+            })
+          });
+          return permutations;
+        }
+      };
+      recursivePermutation(string);
+
+    };
+    var threeLetterCombos = function(letters){
+      var combos = [];
+      for(var i = 0;i<letters.length-2;i++){
+        for(var j = i+1;j<letters.length-1;j++){
+          for(var k = j+1;k<letters.length;k++){
+            combos.push(letters[i]+letters[j]+letters[k]);
+          }
+        }
+      }
+      return combos;
+    }
     return {
-      hasWord: function(wordList,word){
-        //console.log(word);
-        return !!wordList[word];
+      TLPs: function(letters){
+        var uniquePermutations = {};
+        if(letters.length<3){
+          return [];
+        }
+        var tLPs = [];
+        var tLCs = threeLetterCombos(letters);
+
+        for(var i = 0;i<tLCs.length;i++){
+          allPermutations(tLCs[i],uniquePermutations);
+        }
+        return Object.keys(uniquePermutations);
       }
     }
   });
-
-
-
-  // .factory('getWords', function($http) {
-  // var promise;
-  // var getWords = {
-  //   async: function() {
-  //     if ( !promise ) {
-  //       // $http returns a promise, which has a then function, which also returns a promise
-  //       promise = $http.get('http://127.0.0.1:3000/').then(function (response) {
-  //         // The then function here is an opportunity to modify the response
-  //         console.log(response);
-  //         // The return value gets picked up by the then in the controller.
-  //         return response.data;
-  //       });
-  //     }
-  //     // Return the promise to the controller
-  //     return promise;
-  //   }
-  // };
-  // return getWords;
-  // })
-
-
-// .factory('counter', [function(){
-//     return {
-//         increment: function(toIncrease){
-//           var increased = toIncrease+1;
-//           return increased;
-//         },
-//         FizzBuzz: function(number){
-//           if(number%3==0&&number%5==0){
-//             return "FizzBuzz";
-//           } else if (number%3==0){
-//             return "Fizz"
-//           } else if (number%5==0){
-//             return "Buzz";
-//           } else {
-//             return number;
-//           }
-//         } 
-//     }               
-// }]);
