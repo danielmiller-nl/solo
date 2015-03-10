@@ -4,7 +4,7 @@ $(document).ready(function(){
 
   var init = function(){ 
 
-    var textUrl = "http://127.0.0.1:3000";
+    var textUrl = "http://127.0.0.1:3000/";
 
     $.ajax({
       url: textUrl,
