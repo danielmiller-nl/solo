@@ -1,4 +1,5 @@
 var fs = require('fs');
+var _ = require('underscore');
 
 var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
@@ -17,11 +18,13 @@ var requestHandler = function(request, response) {
 
   if(request.method === 'GET'){
 
-    fs.readFile('enable1.txt', 'utf8', function (err, data) {
+    fs.readFile(__dirname +'/enable1.txt', 'utf8', function (err, data) {
       if (err) throw err;
       var textArray = data.split("\n");
+      var threeLetterWordsObject = arrayValsToObjectKeys(getThreeLetterWords(textArray));
+      var count = 0;
       response.writeHead(200, headers);
-      response.end(JSON.stringify(textArray));
+      response.end(JSON.stringify(threeLetterWordsObject));
     });
 
   } else if (request.method === 'OPTIONS') {
@@ -38,6 +41,16 @@ var requestHandler = function(request, response) {
   }
 
 };
+
+var arrayValsToObjectKeys = function(array){
+  return _.object(array,_.map(array,function(i){return true;}));
+}
+
+var getThreeLetterWords = function(allWords){
+  return _.filter(allWords,function(word){
+    return word.length == 3;
+  });
+}
 
 exports.requestHandler = requestHandler;
 
