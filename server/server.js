@@ -20,8 +20,8 @@ var wordRequestHandler = require('./textReader.js');
 //   res.mydata.test = "test123456789";
 //   res.send(res.mydata.test);
 // });
-app.use(express.static('./'));
-app.get('./words', wordRequestHandler.requestHandler); 
+app.use(express.static('/'));
+app.get('/words', wordRequestHandler.requestHandler); 
 //app.get('/', requestHandler.requestHandler);
 
 app.listen(process.env.PORT || 3000);
