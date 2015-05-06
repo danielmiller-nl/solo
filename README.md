@@ -1,2 +1,4 @@
 #solo
-This is a project I completed as a student at [hackreactor](http://hackreactor.com). This project was worked on with a pair.
+An app for poets and Scrabble players that instantly answers the question “What words can I make with these letters?”
+
+http://realtimewordfind.azurewebsites.net/#/
