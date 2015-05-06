@@ -18,7 +18,7 @@ var allPermutations = function(string,size) {
     return [string];
   }
 
-  var uniqueAnagrams = {};
+  var uniquePermutations = {};
 
   var insertLetterAt = function(str,letter,index){
     return str.slice(0,index)+letter+str.slice(index);
@@ -34,6 +34,8 @@ var allPermutations = function(string,size) {
     var strL = str.length;
     if(str.length == 1){
       return [str];
+    } else if (str>size){
+      return recursivePermutation(str.slice(1));
     } else {
       var permutations = [];
       var pOWFLR = recursivePermutation(str.slice(1)); // permutationsOfStringWithFirstLetterRemoved
@@ -41,7 +43,7 @@ var allPermutations = function(string,size) {
       pOWFLR.forEach(function(element,index,array){
         forEachInsertion(element,firstLetter,function(newStr){
           if(str === string){
-            uniqueAnagrams[newStr] = true;
+            uniquePermutations[newStr] = true;
           } else {
             permutations.push(newStr);
           }
@@ -53,5 +55,5 @@ var allPermutations = function(string,size) {
 
   recursivePermutation(string);
 
-  return Object.keys(uniqueAnagrams);
+  return Object.keys(uniquePermutations);
 };
